@@ -1595,7 +1595,7 @@ parameter Real table[:, <strong>2</strong>]=[0, 0; 1, 1; 2, 4];
     parameter Real table[:, :] = fill(0.0, 0, 2)
       "Table matrix (time = first column; e.g., table=[0, 0; 1, 1; 2, 4])"
       annotation (Dialog(group="Table data definition",enable=not tableOnFile));
-    parameter String tableName="NoName"
+    parameter String tableName = "NoName"
       "Table name on file or in function usertab (see docu)"
       annotation (Dialog(group="Table data definition",enable=tableOnFile));
     parameter String fileName="NoName" "File where matrix is stored"
