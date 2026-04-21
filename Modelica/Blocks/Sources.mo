@@ -1606,7 +1606,7 @@ parameter Real table[:, <strong>2</strong>]=[0, 0; 1, 1; 2, 4];
             caption="Open file in which table is present")));
     parameter String delimiter="," "Column delimiter character for CSV file"
       annotation (Dialog(
-        group="Table data definition",
+        group = "Table data definition",
         enable = tableOnFile and isCsvExt),
         choices(choice=" " "Blank", choice="," "Comma", choice="\t" "Horizontal tabulator", choice=";" "Semicolon"));
     parameter Integer nHeaderLines=0 "Number of header lines to ignore for CSV file"
