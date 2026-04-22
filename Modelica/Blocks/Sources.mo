@@ -1618,7 +1618,7 @@ parameter Real table[:, <strong>2</strong>]=[0, 0; 1, 1; 2, 4];
       "Columns of table to be interpolated"
       annotation (Dialog(group="Table data interpretation",
       groupImage="modelica://Modelica/Resources/Images/Blocks/Sources/CombiTimeTable.png"));
-    parameter Modelica.Blocks.Types.Smoothness smoothness=Modelica.Blocks.Types.Smoothness.LinearSegments
+    parameter Modelica.Blocks.Types.Smoothness smoothness = Modelica.Blocks.Types.Smoothness.LinearSegments
       "Smoothness of table interpolation"
       annotation (Dialog(group="Table data interpretation"));
     parameter Modelica.Blocks.Types.Extrapolation extrapolation=Modelica.Blocks.Types.Extrapolation.LastTwoPoints
