@@ -19,7 +19,7 @@ package Continuous "Library of continuous control blocks with internal states"
     parameter Init initType=Init.InitialState
       "Type of initialization (1: no init, 2: steady state, 3,4: initial output)" annotation(Evaluate=true,
         Dialog(group="Initialization"));
-    parameter Real y_start=0 "Initial or guess value of output (= state)"
+    parameter Real y_start = 0 "Initial or guess value of output (= state)"
       annotation (Dialog(group="Initialization"));
     extends Interfaces.SISO;
     Modelica.Blocks.Interfaces.BooleanInput reset if use_reset "Optional connector of reset signal" annotation(Placement(
