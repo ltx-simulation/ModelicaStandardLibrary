@@ -1635,7 +1635,7 @@ parameter Real table[:, <strong>2</strong>]=[0, 0; 1, 1; 2, 4];
     parameter SI.Time shiftTime = startTime
       "Shift time of first table column"
       annotation (Dialog(group="Table data interpretation"));
-    parameter Modelica.Blocks.Types.TimeEvents timeEvents=Modelica.Blocks.Types.TimeEvents.Always
+    parameter Modelica.Blocks.Types.TimeEvents timeEvents = Modelica.Blocks.Types.TimeEvents.Always
       "Time event handling of table interpolation"
       annotation (Dialog(group="Table data interpretation", enable=smoothness == Modelica.Blocks.Types.Smoothness.LinearSegments));
     parameter Boolean verboseExtrapolation=false
