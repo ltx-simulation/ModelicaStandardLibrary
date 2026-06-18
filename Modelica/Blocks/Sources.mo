@@ -1650,7 +1650,7 @@ parameter Real table[:, <strong>2</strong>]=[0, 0; 1, 1; 2, 4];
     final parameter Real t_maxScaled = Internal.getTimeTableTmax(tableID)
       "Maximum (scaled) abscissa value defined in table";
   protected
-    final parameter Real p_offset[nout]=(if size(offset, 1) == 1 then ones(nout)*offset[1] else offset)
+    final parameter Real p_offset[nout] = (if size(offset, 1) == 1 then ones(nout)*offset[1] else offset)
       "Offsets of output signals";
     parameter Modelica.Blocks.Types.ExternalCombiTimeTable tableID=
         Modelica.Blocks.Types.ExternalCombiTimeTable(
