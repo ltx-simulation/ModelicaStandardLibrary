@@ -29,9 +29,9 @@ jobs:
         id: decide
         run: |
           if [ "${{ needs.test.result }}" = "success" ]; then
-            echo "event=approve" >> "$GITHUB_OUTPUT"
+            echo "event=APPROVE" >> "$GITHUB_OUTPUT"
           else
-            echo "event=request_changes" >> "$GITHUB_OUTPUT"
+            echo "event=REQUEST_CHANGES" >> "$GITHUB_OUTPUT"
           fi
       - name: Create review in other repo
         env:
