@@ -1,0 +1,12 @@
+on:
+  repository_dispatch:
+    types: [CI_trigger_type]
+
+jobs:
+  handle:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          echo "number: ${{ github.event.client_payload.number }}"
+          echo "haed_sha: ${{ github.event.client_payload.head_sha }}"
+          echo "base_sha: ${{ github.event.client_payload.base_sha }}"
