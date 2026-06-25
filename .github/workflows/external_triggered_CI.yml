@@ -58,13 +58,13 @@ jobs:
       credentials:
         username: ${{ secrets.GHCR_USER }}
         password: ${{ secrets.GHCR_TOKEN }}
-        repository: ${{ env.REPO_NAME }}
 
     steps:
       - uses: actions/checkout@v6
         with: 
             persist-credentials: false
             fetch-depth: 0
+            repository: ${{ env.REPO_NAME }}
       
       - name: prepare
         run: /work/run_scripts/prepare_tool.sh $GITHUB_WORKSPACE ${{ env.EVENT_NUMBER }} ${{ env.BASE_SHA }} ${{ env.PR_SHA }} om
