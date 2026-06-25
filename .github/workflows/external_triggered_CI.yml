@@ -40,6 +40,12 @@ jobs:
           TARGET_PR:  ${{ github.event.client_payload.number }}
           EVENT: ${{ steps.decide.outputs.event }}
           BODY: ${{ inputs.body }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TARGET_REPO: "matthiasbschaefer/ModelicaStandardLibrary"
+          TARGET_PR:   ${{ github.event.client_payload.number }}
+          EVENT:       ${{ steps.decide.outputs.event }}
+          BODY:        "Please look here for details: https://serv.ltx.de/prs/${{ github.event.client_payload.number }}/Modelica/report/PR_comparison_report.html and https://serv.ltx.de/prs/${{ github.event.client_payload.number }}/ModelicaTest/report/PR_comparison_report.html"
+
         run: |
           API="https://api.github.com/repos/${TARGET_REPO}/pulls/${TARGET_PR}/reviews"
           curl -sS -X POST "$API" \
