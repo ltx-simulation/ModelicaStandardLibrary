@@ -105,7 +105,8 @@ jobs:
 
   review:
     runs-on: ubuntu-latest
-    needs: [run_openmodelica, run_dymola]
+    needs: [run_openmodelica, run_dymola, publish]
+    if: always()
     permissions:
       pull-requests: write
     steps:
