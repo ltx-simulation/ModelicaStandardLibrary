@@ -1608,12 +1608,12 @@ parameter Real table[:, <strong>2</strong>]=[0, 0; 1, 1; 2, 4];
       annotation (Dialog(
         group = "Table data definition",
         enable = tableOnFile and isCsvExt),
-        choices(choice=" " "Blank", choice="," "Comma", choice="\t" "Horizontal tabulator", choice=";" "Semicolon"));
+        choices(choice=" " "Blank", choice= "," "Comma" , choice="\t" "Horizontal tabulator", choice=";" "Semicolon"));
     parameter Integer nHeaderLines=0 "Number of header lines to ignore for CSV file"
-      annotation (Dialog(group="Table data definition",enable=tableOnFile and isCsvExt));
+      annotation (Dialog(group="Table data definition",enable = tableOnFile and isCsvExt));
     parameter Boolean verboseRead=true
       "= true, if info message that file is loading is to be printed"
-      annotation (Dialog(group="Table data definition",enable=tableOnFile));
+      annotation (Dialog(group="Table data definition",enable = tableOnFile));
     parameter Integer columns[:]=2:size(table, 2)
       "Columns of table to be interpolated"
       annotation (Dialog(group="Table data interpretation",
