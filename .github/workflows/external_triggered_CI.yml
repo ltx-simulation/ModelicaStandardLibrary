@@ -1,13 +1,15 @@
 on:
   repository_dispatch:
     types: [CI_trigger_type]
-    inputs:
-      target_repo:
-        required: true
-        default:  "matthiasbschaefer/ModelicaStandardLibrary"
-      body:
-        required: true
-        default: "Please look here for details: "
+
+env:
+    EVENT_NUMBER:  ${{ github.event.client_payload.number }}
+    BASE_SHA: ${{ github.event.client_payload.base_sha }}
+    PR_SHA: ${{ github.event.client_payload.head_sha }}
+    REPO_NAME: ${{ github.event.client_payload.github_repo }}
+    #WORKSPACE: ${{ github.workspace }}
+    PR_SERVER: ${{ vars.LTX_PR_SERVER }}
+    # WORKSPACE: $GITHUB_WORKSPACE
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -18,17 +20,118 @@ jobs:
           echo "number: ${{ github.event.client_payload.number }}"
           echo "head_sha: ${{ github.event.client_payload.head_sha }}"
           echo "base_sha: ${{ github.event.client_payload.base_sha }}"
+  
+  
+  run_dymola:
+    runs-on: ubuntu-latest
+
+    container:
+      image: ghcr.io/matthiasbschaefer/dymola_image:latest
+      options: --user=resimuser --rm
+      credentials:
+        username: ${{ secrets.GHCR_USER }}
+        password: ${{ secrets.GHCR_TOKEN }}
+
+    steps:
+      - uses: actions/checkout@v6
+        with: 
+            persist-credentials: false
+            fetch-depth: 0
+            repository: ${{ env.REPO_NAME }}
+      
+      - name: prepare
+        run: /work/run_scripts/prepare_tool.sh $GITHUB_WORKSPACE ${{ env.EVENT_NUMBER }} ${{ env.BASE_SHA }} ${{ env.PR_SHA }} dymola
+        
+      - name: run
+        run: /work/run_scripts/run_tool.sh $GITHUB_WORKSPACE ${{ env.EVENT_NUMBER }} ${{ env.BASE_SHA }} dymola
+  
+  run_openmodelica:
+    runs-on: ubuntu-latest
+
+    container:
+      image: ghcr.io/matthiasbschaefer/om_image:latest
+      options: --user=resimuser --rm
+      credentials:
+        username: ${{ secrets.GHCR_USER }}
+        password: ${{ secrets.GHCR_TOKEN }}
+
+    steps:
+      - uses: actions/checkout@v6
+        with: 
+            persist-credentials: false
+            fetch-depth: 0
+      
+      - name: prepare
+        run: /work/run_scripts/prepare_tool.sh $GITHUB_WORKSPACE ${{ env.EVENT_NUMBER }} ${{ env.BASE_SHA }} ${{ env.PR_SHA }} om
+        
+      - name: run
+        run: /work/run_scripts/run_tool.sh $GITHUB_WORKSPACE ${{ env.EVENT_NUMBER }} ${{ env.BASE_SHA }} om
+
+  overview:
+    runs-on: ubuntu-latest
+    needs: [run_openmodelica, run_dymola]
+    if: always()
+    container:
+      image: ghcr.io/matthiasbschaefer/om_image:latest
+      options: --user=resimuser --rm
+      credentials:
+        username: ${{ secrets.GHCR_USER }}
+        password: ${{ secrets.GHCR_TOKEN }}
+  
+    
+    steps:
+      - name: create_overview
+        run: /work/run_scripts/create_overview.sh ${{ env.EVENT_NUMBER }}
+    
+  publish_modelica:
+    runs-on: ubuntu-latest
+    needs: [overview]
+    if: always()
+    container:
+      image: ghcr.io/matthiasbschaefer/om_image:latest
+      options: --user=resimuser --rm
+      credentials:
+        username: ${{ secrets.GHCR_USER }}
+        password: ${{ secrets.GHCR_TOKEN }}    
+    
+    #environment: 
+    #    name: modelica_report
+    #    url: ${{ env.PR_SERVER }}/${{ env.EVENT_NUMBER }}/Modelica/report/PR_comparison_report.html
+    
+    steps:  
+      - name: publish_modelica
+        run: /work/run_scripts/publish_reports.sh ${{ env.EVENT_NUMBER }} Modelica
+
+  
+  
+  publish_modelicatest:
+    runs-on: ubuntu-latest
+    needs: [overview]
+    if: always()
+    container:
+      image: ghcr.io/matthiasbschaefer/om_image:latest
+      options: --user=resimuser --rm
+      credentials:
+        username: ${{ secrets.GHCR_USER }}
+        password: ${{ secrets.GHCR_TOKEN }}    
+    #environment: 
+    #    name: modelica_report
+    #    url: ${{ env.PR_SERVER }}/${{ env.EVENT_NUMBER }}/ModelicaTest/report/PR_comparison_report.html  
+    
+    steps:        
+      - name: publish_modelicatest
+        run: /work/run_scripts/publish_reports.sh ${{ env.EVENT_NUMBER }} ModelicaTest
 
   review:
     runs-on: ubuntu-latest
-    needs: test
+    needs: [run_openmodelica, run_dymola]
     permissions:
       pull-requests: write
     steps:
       - name: Decide review event
         id: decide
         run: |
-          if [ "${{ needs.test.result }}" = "success" ]; then
+          if [ "${{ run_openmodelica.test.result }}" = "success" ] &&  [ "${{ run_dymola.test.result }}" = "success" ]; then
             echo "event=APPROVE" >> "$GITHUB_OUTPUT"
           else
             echo "event=REQUEST_CHANGES" >> "$GITHUB_OUTPUT"
@@ -39,7 +142,7 @@ jobs:
           TARGET_REPO: "matthiasbschaefer/ModelicaStandardLibrary"
           TARGET_PR:   ${{ github.event.client_payload.number }}
           EVENT:       ${{ steps.decide.outputs.event }}
-          BODY:        "Please look here for details: https://serv.ltx.de/prs/${{ github.event.client_payload.number }}/Modelica/report/PR_comparison_report.html and https://serv.ltx.de/prs/${{ github.event.client_payload.number }}/ModelicaTest/report/PR_comparison_report.html"
+          BODY:        "Please look here for details:${{ env.PR_SERVER }}/${{ env.EVENT_NUMBER }}/Modelica/report/PR_comparison_report.html and ${{ env.PR_SERVER }}/${{ env.EVENT_NUMBER }}/ModelicaTest/report/PR_comparison_report.html"
 
         run: |
           API="https://api.github.com/repos/${TARGET_REPO}/pulls/${TARGET_PR}/reviews"
