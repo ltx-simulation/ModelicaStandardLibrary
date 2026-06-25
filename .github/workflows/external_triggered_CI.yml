@@ -83,7 +83,7 @@ jobs:
       - name: create_overview
         run: /work/run_scripts/create_overview.sh ${{ env.EVENT_NUMBER }}
     
-  publish_modelica:
+  publish:
     runs-on: ubuntu-latest
     needs: [overview]
     if: always()
@@ -99,28 +99,9 @@ jobs:
     #    url: ${{ env.PR_SERVER }}/${{ env.EVENT_NUMBER }}/Modelica/report/PR_comparison_report.html
     
     steps:  
-      - name: publish_modelica
-        run: /work/run_scripts/publish_reports.sh ${{ env.EVENT_NUMBER }} Modelica
+      - name: publish
+        run: /work/run_scripts/publish_reports.sh ${{ env.EVENT_NUMBER }}
 
-  
-  
-  publish_modelicatest:
-    runs-on: ubuntu-latest
-    needs: [overview]
-    if: always()
-    container:
-      image: ghcr.io/matthiasbschaefer/om_image:latest
-      options: --user=resimuser --rm
-      credentials:
-        username: ${{ secrets.GHCR_USER }}
-        password: ${{ secrets.GHCR_TOKEN }}    
-    #environment: 
-    #    name: modelica_report
-    #    url: ${{ env.PR_SERVER }}/${{ env.EVENT_NUMBER }}/ModelicaTest/report/PR_comparison_report.html  
-    
-    steps:        
-      - name: publish_modelicatest
-        run: /work/run_scripts/publish_reports.sh ${{ env.EVENT_NUMBER }} ModelicaTest
 
   review:
     runs-on: ubuntu-latest
@@ -131,7 +112,7 @@ jobs:
       - name: Decide review event
         id: decide
         run: |
-          if [ "${{ run_openmodelica.test.result }}" = "success" ] &&  [ "${{ run_dymola.test.result }}" = "success" ]; then
+          if [ "${{ needs.run_openmodelica.result }}" = "success" ] &&  [ "${{ needs.run_dymola.result }}" = "success" ]; then
             echo "event=APPROVE" >> "$GITHUB_OUTPUT"
           else
             echo "event=REQUEST_CHANGES" >> "$GITHUB_OUTPUT"
@@ -142,7 +123,7 @@ jobs:
           TARGET_REPO: "matthiasbschaefer/ModelicaStandardLibrary"
           TARGET_PR:   ${{ github.event.client_payload.number }}
           EVENT:       ${{ steps.decide.outputs.event }}
-          BODY:        "Please look here for details:${{ env.PR_SERVER }}/${{ env.EVENT_NUMBER }}/Modelica/report/PR_comparison_report.html and ${{ env.PR_SERVER }}/${{ env.EVENT_NUMBER }}/ModelicaTest/report/PR_comparison_report.html"
+          BODY:        "Please look here for details:${{ env.PR_SERVER }}/${{ env.EVENT_NUMBER }}/Modelica/PR_comparison_report.html and ${{ env.PR_SERVER }}/${{ env.EVENT_NUMBER }}/ModelicaTest/PR_comparison_report.html"
 
         run: |
           API="https://api.github.com/repos/${TARGET_REPO}/pulls/${TARGET_PR}/reviews"
