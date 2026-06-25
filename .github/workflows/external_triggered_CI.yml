@@ -35,7 +35,7 @@ jobs:
           fi
       - name: Create review in other repo
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.MODELICA_TOKEN }}
           TARGET_REPO: "matthiasbschaefer/ModelicaStandardLibrary"
           TARGET_PR:   ${{ github.event.client_payload.number }}
           EVENT:       ${{ steps.decide.outputs.event }}
