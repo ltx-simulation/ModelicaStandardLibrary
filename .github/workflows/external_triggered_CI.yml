@@ -12,18 +12,7 @@ env:
     # WORKSPACE: $GITHUB_WORKSPACE
 
 
-jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Previous step
-        id: prev
-        run: |
-          echo "number: ${{ github.event.client_payload.number }}"
-          echo "head_sha: ${{ github.event.client_payload.head_sha }}"
-          echo "base_sha: ${{ github.event.client_payload.base_sha }}"
-  
-  
+jobs:  
   run_dymola:
     runs-on: ubuntu-latest
 
