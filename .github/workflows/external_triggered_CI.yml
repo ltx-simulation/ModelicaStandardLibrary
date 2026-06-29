@@ -1,6 +1,6 @@
 on:
   repository_dispatch:
-    types: [CI_trigger_typ]
+    types: [CI_trigger_type]
 
 env:
     EVENT_NUMBER:  ${{ github.event.client_payload.number }}
